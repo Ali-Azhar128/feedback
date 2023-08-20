@@ -2,6 +2,15 @@
   text-align: center;
 }
 
+.feedbackReviews{
+  font-size: 60px;
+  display: flex;
+  justify-content: space-between;
+}
+.feedbackReviews h4{
+  display: inline;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
