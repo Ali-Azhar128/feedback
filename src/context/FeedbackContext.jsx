@@ -1,31 +1,72 @@
-import  { createContext, useState } from 'react'
-import FeedbackData from '../data/feedbackData'
+import  { createContext, useState, useEffect } from 'react'
+
 import FeedbackInput from '../components/feedbackInput'
 
 
 const FeedbackContext = createContext()
 
 export const FeedbackProvider = ({children}) => {
+    var feedbackData;
 
-    const onDelete = (id) => {
+    const fetchFeedback = async () => {
+        const response = await fetch('/feedback')
+        const data = await response.json()
+        setFeedback(data)
+ 
+    }
+
+    const onDelete = async (id) => {
+        await fetch(`/feedback/${id}`,
+        {
+            method: 'DELETE'
+        })
+
         setFeedback(feedback.filter((item) => item.id !== id))
     }
-    const addItem = (newFeedback) => {
-        console.log(newFeedback)
-    
-    
-        setFeedback([...feedback, newFeedback])
-        console.log(...feedback)
-    
-    
-    
+    const addItem = async (newFeedback) => {
+        //console.log(newFeedback)
+        const response = await fetch(
+            '/feedback', 
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newFeedback)
+            }
+        )
+        const data = await response.json()
+        console.log(data)
+        setFeedback([...feedback, data])
+       // console.log(...feedback)
       }
-    const editItem = (e, text, rating) => {
+
+    const editItem = async (e, text, rating) => {
         e.preventDefault()
        // console.log(feedback[clickedItem].rating)
+      
        feedback[clickedItem].rating = rating
         feedback[clickedItem].text = text
         //console.log(clickedItem)
+        var updItem = {
+            rating: feedback[clickedItem].rating,
+            text: feedback[clickedItem].text,
+            ...feedback[clickedItem]
+        
+        
+        }
+
+        await fetch(`feedback/${feedback[clickedItem].id}`,
+        {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updItem)
+        }
+        )
+
+
        
         setFeedback([...feedback])
         setEnaleEdit(true)
@@ -37,9 +78,12 @@ export const FeedbackProvider = ({children}) => {
 
 
 
-
+    useEffect(() => {
+        fetchFeedback()
+    },
+    [])
     const [enableEdit, setEnaleEdit] = useState(true)
-    const [feedback, setFeedback] = useState(FeedbackData)
+    const [feedback, setFeedback] = useState([])
     const [clickedItem, setClickedItem] = useState(-1)
     const setIndex = (index) => {
         setClickedItem(index)

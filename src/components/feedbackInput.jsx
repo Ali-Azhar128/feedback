@@ -39,8 +39,8 @@ function FeedbackInput() {
       text,
       rating
     }
-    newFeedback.id = uuidv4()
-    console.log(newFeedback)
+    //newFeedback.id = uuidv4()
+   //console.log(newFeedback)
     addItem(newFeedback)
 
     setText('')
